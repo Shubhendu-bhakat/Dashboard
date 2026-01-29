@@ -2,20 +2,21 @@
 
 export type MetricChangeType = "up" | "down";
 
+//data to card component type definition
 export interface MetricCard {
   id: string;
   label: string;
   value: string;
   change: string;
-  changeType: MetricChangeType;
+  changeType: MetricChangeType; //arrow type
   gradient: string;
   icon: string;
 }
 
 export interface PieChartData {
-  title: string;
-  labels: string[];
-  series: number[];
+  title: string; //title of chart
+  labels: string[]; //labels for pie segments
+  series: number[]; //data values for pie segments
 }
 
 export interface BarSeriesItem {
@@ -70,9 +71,8 @@ export interface DashboardData {
   /** Second bar chart: Country Code, Customer Id, Email Address */
   validationRecordsChart2: BarChartData;
   regionWiseDataQuality: RegionWiseDataQuality;
-  demographics: DemographicItem[];
 }
-
+///dashboard data as demo
 export const dashboardData: DashboardData = {
   metrics: [
     {
@@ -136,7 +136,7 @@ export const dashboardData: DashboardData = {
     series: [4295, 3581],
   },
   validationRecordsChart: {
-    title: "Data Validation Records",
+    title: "Warning Distributions",
     subtitle: "Monthly Targets by Field Type",
     categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     series: [
@@ -147,7 +147,7 @@ export const dashboardData: DashboardData = {
     ],
   },
   validationRecordsChart2: {
-    title: "Validation by Field",
+    title: "Error Distributions",
     subtitle: "Country Code, Customer Id, Email Address",
     categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     series: [
@@ -170,8 +170,4 @@ export const dashboardData: DashboardData = {
       { code: "mw", name: "Malawi", score: 71 },
     ],
   },
-  demographics: [
-    { country: "USA", code: "usa", customers: 2379, percentage: 79, flagSrc: "/images/country/country-01.svg" },
-    { country: "France", code: "france", customers: 589, percentage: 23, flagSrc: "/images/country/country-02.svg" },
-  ],
 };

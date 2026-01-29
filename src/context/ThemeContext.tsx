@@ -1,5 +1,4 @@
 "use client";
-
 import type React from "react";
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 
@@ -16,9 +15,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [theme, setTheme] = useState<Theme>(() => {
+    //checking using window object that where the code is , if it is on window then use local storage else skip it 
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("theme") as Theme | null;
-      return savedTheme || "light";
+      return savedTheme || "dark";
     }
     return "light";
   });
