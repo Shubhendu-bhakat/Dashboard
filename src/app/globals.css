@@ -782,3 +782,24 @@ span.flatpickr-weekday,
     opacity: 1;
   }
 }
+/* ApexCharts must always float above cards */
+.apexcharts-tooltip,
+.apexcharts-xaxistooltip {
+  z-index: 9999 !important;
+}
+
+/* Prevent select overflow on mobile */
+select {
+  max-width: 100%;
+}
+.apexcharts-tooltip {
+  background: #0f172a !important;  /* slate-900 */
+  color: #f8fafc !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  backdrop-filter: blur(8px);
+}
+
+.apexcharts-tooltip span,
+.apexcharts-tooltip text {
+  color: #f8fafc !important;
+}
