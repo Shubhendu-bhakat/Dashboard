@@ -2,8 +2,8 @@
 
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import Link from "next/link";
-import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
+import Logo from "@/components/ecommerce/Logo";
 
 export default function AppHeader() {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -12,20 +12,7 @@ export default function AppHeader() {
     <header className="sticky top-0 z-[99999] flex w-full flex-col border-b border-gray-300 bg-white dark:border-gray-800 dark:bg-gray-900">
       <div className="flex w-full items-center justify-between gap-4 px-4 py-3 md:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Image
-            width={154}
-            height={32}
-            className="dark:hidden"
-            src="/images/logo/download.png"
-            alt="Logo"
-          />
-          <Image
-            width={154}
-            height={32}
-            className="hidden dark:block"
-            src="/images/logo/download.png"
-            alt="Logo"
-          />
+          <Logo />
         </Link>
 
         <div className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center text-center">

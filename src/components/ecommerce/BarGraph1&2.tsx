@@ -99,7 +99,8 @@ export default function MonthlyTarget({ data }: MonthlyTargetProps) {
 <div className={`${open ? "block" : "hidden"} sm:block`}>
   <div className="mb-5 max-w-full overflow-hidden rounded-2xl border border-black/10 bg-white/80 p-4 backdrop-blur-md dark:border-white/10 dark:bg-gray-900/80">
 
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-[220px_140px_1fr]">
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
 
       {/* Field Selector */}
       <div className="flex flex-col gap-1">

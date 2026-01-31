@@ -10,7 +10,7 @@ export const metadata = {
   title: "I&M Bank Data Center - Data Quality Dashboard",
   description: "Data Quality Dashboard - I&M Bank",
   icons: {
-    icon: "/images/logo/download.png",
+    icon: "/images/favicon.ico",
   },
 };
 
