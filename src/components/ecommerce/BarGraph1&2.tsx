@@ -168,7 +168,7 @@ export default function MonthlyTarget({ data }: MonthlyTargetProps) {
       ? `Top ${topN} fields`
       : selectedField}
   </div>
-</div>
+ </div>
 
 
     </div>
