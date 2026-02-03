@@ -8,7 +8,7 @@ export default function Logo() {
   const { theme } = useTheme();
 
   const logoSrc = useMemo(
-    () => (theme === "dark" ? "/images/logo-dark.png" : "/images/logo-light.png"),
+    () => (theme === "dark" ? "/images/logo-dark1.png" : "/images/logo-light.png"),
     [theme]
   );
 
@@ -25,3 +25,4 @@ export default function Logo() {
     </div>
   );
 }
+

@@ -4,6 +4,7 @@ import AppFooter from "@/layout/AppFooter";
 import AppHeader from "@/layout/AppHeader";
 import React from "react";
 
+
 export default function AdminLayout({
   children,
 }: {

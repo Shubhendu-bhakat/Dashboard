@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type DashboardFilterContextType = {
   year: number;
@@ -12,8 +12,9 @@ type DashboardFilterContextType = {
 const DashboardFilterContext = createContext<DashboardFilterContextType | null>(null);
 
 export function DashboardFilterProvider({ children }: { children: React.ReactNode }) {
-  const [year, setYear] = useState(2024);
-  const [month, setMonth] = useState("All");  
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().toLocaleString("en", { month: "short" }));  
+  
 
   return (
     <DashboardFilterContext.Provider value={{ year, month, setYear, setMonth }}>
@@ -27,3 +28,4 @@ export const useDashboardFilter = () => {
   if (!ctx) throw new Error("useDashboardFilter must be used inside provider");
   return ctx;
 };
+

@@ -1,151 +1,132 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { worldMill } from "@react-jvectormap/world";
-import dynamic from "next/dynamic";
+import React, { useMemo, useState } from "react";
 import {
-  dashboardData,
-  type RegionWiseDataQuality as RegionWiseDataQualityType,
-} from "@/data/dashboard";
+  ComposableMap,
+  Geographies,
+  Geography,
+  ZoomableGroup
+} from "react-simple-maps";
+import { scaleLinear } from "d3-scale";
+import { interpolateRgb } from "d3-interpolate";
+import { dashboardData } from "@/data/dashboard";
+import { worldGeo } from "../../worldGo";
 
-const VectorMap = dynamic(
-  () => import("@react-jvectormap/core").then((mod) => mod.VectorMap),
-  { ssr: false }
-);
-
-const DEFAULT_FILL = "#D0D5DD";
-const SCORE_COLORS: Record<number, string> = {
-  65: "#b91c1c", // dark red
-  70: "#ea580c", // orange
-  75: "#0ea5e9", // light blue
+const ISO2_TO_NUMERIC: Record<string, string> = {
+  ke: "404",
+  tz: "834",
+  ug: "800",
+  rw: "646",
+  cd: "180",
+  et: "231",
+  zw: "716",
+  zm: "894",
+  mw: "454",
+  ss: "728"
 };
 
-function interpolateColor(
-  score: number,
-  range: [number, number, number]
-): string {
-  const [low, mid, high] = range;
-  if (score <= low) return SCORE_COLORS[65] ?? DEFAULT_FILL;
-  if (score >= high) return SCORE_COLORS[75] ?? DEFAULT_FILL;
-  if (score <= mid) {
-    const t = (score - low) / (mid - low);
-    return blend(SCORE_COLORS[65]!, SCORE_COLORS[70]!, t);
-  }
-  const t = (score - mid) / (high - mid);
-  return blend(SCORE_COLORS[70]!, SCORE_COLORS[75]!, t);
-}
+export default function RegionWiseDataQualityMap() {
+  const regions = dashboardData.regionWiseDataQuality.regions;
+  const [tooltip, setTooltip] = useState<string | null>(null);
 
-function blend(hex1: string, hex2: string, t: number): string {
-  const r1 = parseInt(hex1.slice(1, 3), 16);
-  const g1 = parseInt(hex1.slice(3, 5), 16);
-  const b1 = parseInt(hex1.slice(5, 7), 16);
-  const r2 = parseInt(hex2.slice(1, 3), 16);
-  const g2 = parseInt(hex2.slice(3, 5), 16);
-  const b2 = parseInt(hex2.slice(5, 7), 16);
-  const r = Math.round(r1 + (r2 - r1) * t);
-  const g = Math.round(g1 + (g2 - g1) * t);
-  const b = Math.round(b1 + (b2 - b1) * t);
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-}
-
-interface RegionWiseDataQualityMapProps {
-  /** Optional data override. When backend is ready, pass API data here. */
-  data?: RegionWiseDataQualityType;
-}
-
-export default function RegionWiseDataQualityMap({ data }: RegionWiseDataQualityMapProps) {
-  const mapData = data ?? dashboardData.regionWiseDataQuality;
-
-  const scoreByCode = useMemo(() => {
+  const scoreById = useMemo(() => {
     const map: Record<string, number> = {};
-    mapData.regions.forEach((r) => {
-      map[r.code.toLowerCase()] = r.score;
+    regions.forEach(r => {
+      const id = ISO2_TO_NUMERIC[r.code];
+      if (id) map[id] = r.score;
     });
     return map;
-  }, [mapData.regions]);
+  }, [regions]);
 
-  const getRegionStyle = useMemo(
-    () => (code: string) => {
-      const score = scoreByCode[code.toLowerCase()];
-      const fill =
-        score != null
-          ? interpolateColor(score, mapData.scoreRange)
-          : DEFAULT_FILL;
-      return {
-        initial: {
-          fill,
-          fillOpacity: 1,
-          stroke: "#fff",
-          strokeWidth: 0.5,
-        },
-      };
-    },
-    [scoreByCode, mapData.scoreRange]
-  );
+  const colorScale = scaleLinear<string>()
+    .domain([60, 70, 80])
+    .range(["#991b1b", "#f97316", "#0284c7"])
+    .interpolate(interpolateRgb)
+    .clamp(true);
 
-  return (
-    <div className="overflow-hidden rounded-2xl border border-gray-300 bg-white shadow-theme-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">
-      <style>
-        {`
-          .region-wise-map-enter {
-            animation: regionMapFadeIn 0.6s ease-out forwards;
-          }
-          @keyframes regionMapFadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-          }
-          .region-wise-map path {
-            transition: fill 0.25s ease, filter 0.2s ease;
-          }
-          .region-wise-map path:hover {
-            filter: brightness(1.08);
-          }
-        `}
-      </style>
-      <div className="region-wise-map-enter border-b border-gray-200 px-5 pt-5 dark:border-gray-700 sm:px-6 sm:pt-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white/90">
-          {mapData.title}
-        </h3>
-        <p className="mt-1 text-theme-sm text-gray-600 dark:text-gray-400">
-          Data Quality Score by region
-        </p>
-      </div>
-      <div className="region-wise-map relative my-4 mx-4 h-[320px] overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900/80 sm:mx-6 md:h-[380px]">
-        <VectorMap
-          map={worldMill}
-          backgroundColor="transparent"
-          zoomOnScroll={true}
-          zoomMin={1}
-          zoomMax={8}
-          zoomStep={0.5}
-          regionStyle={getRegionStyle}
-          className="h-full w-full"
-          style={{ width: "100%", height: "100%" }}
-          regionLabelStyle={{
-            initial: { fill: "#64748b", fontWeight: 500, fontSize: "11px" },
-            hover: {},
-            selected: {},
+ return (
+  <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    
+    {/* Header */}
+    <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-700">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        Region wise data Quality
+      </h3>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Data Quality Score by region
+      </p>
+    </div>
+
+    {/* Map */}
+    <div className="relative h-[360px] overflow-hidden bg-gray-100 dark:bg-gray-800">
+      {tooltip && (
+        <div className="absolute left-1/2 top-3 z-50 -translate-x-1/2 rounded-md bg-black px-3 py-1 text-xs text-white shadow-lg">
+          {tooltip}
+        </div>
+      )}
+
+      <ComposableMap className="h-full w-full">
+        <ZoomableGroup center={[34, -3]} zoom={2.8}>
+          <Geographies geography={worldGeo}>
+            {({ geographies }) =>
+              geographies.map(geo => {
+                const id = geo.id as string;
+                const score = scoreById[id];
+                const fill = score ? colorScale(score) : "#e5e7eb";
+
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill={fill}
+                    stroke="#ffffff"
+                    strokeWidth={0.6}
+                    style={{
+                      default: { outline: "none" },
+                      hover: {
+                        fill,
+                        filter: "brightness(1.15)",
+                        outline: "none"
+                      },
+                      pressed: { outline: "none" }
+                    }}
+                    onMouseEnter={() => {
+                      if (score) {
+                        setTooltip(`${geo.properties.name} — DQ ${score}`);
+                      }
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        </ZoomableGroup>
+      </ComposableMap>
+    </div>
+
+    {/* Legend */}
+    <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-700">
+      <p className="mb-2 text-center text-xs font-medium text-gray-600 dark:text-gray-400">
+        Data Quality Score Range
+      </p>
+
+      <div className="mx-auto max-w-sm">
+        <div
+          className="h-3 w-full rounded-md"
+          style={{
+            background:
+              "linear-gradient(to right, #7a001f, #f4a582, #053061)"
           }}
         />
-      </div>
-      <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-700 sm:px-6">
-        <p className="mb-2 text-center text-theme-xs font-medium text-gray-700 dark:text-gray-400">
-          Data Quality Score Range
-        </p>
-        <div className="mx-auto max-w-md">
-          <div
-            className="mb-1.5 h-3 w-full rounded-md"
-            style={{
-              background: `linear-gradient(to right, ${SCORE_COLORS[65]}, ${SCORE_COLORS[70]}, ${SCORE_COLORS[75]})`,
-            }}
-          />
-          <div className="flex justify-between text-theme-xs font-medium text-gray-600 dark:text-gray-400">
-            {mapData.scoreRange.map((v) => (
-              <span key={v}>{v}</span>
-            ))}
-          </div>
+        <div className="mt-1 flex justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+          <span>65</span>
+          <span>70</span>
+          <span>75</span>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }

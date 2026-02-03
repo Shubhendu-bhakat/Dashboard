@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -51,8 +52,7 @@ export function EcommerceMetrics({ data }: EcommerceMetricsProps) {
   return (
     <div className="relative rounded-2xl p-2 bg-[linear-gradient(to_right,rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:40px_40px] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)]">
 
-      {/* Compact Grid */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-3">
+     <div className="grid grid-cols-3 gap-3">
         {mappedMetrics.map((metric) => {
           const Icon = iconMap[metric.icon] ?? CheckCircleIcon;
           const isUp = metric.changeType === "up";
@@ -63,35 +63,37 @@ export function EcommerceMetrics({ data }: EcommerceMetricsProps) {
               key={metric.id}
               onMouseEnter={() => setActiveId(metric.id)}
               onMouseLeave={() => setActiveId(null)}
-              className={`relative rounded-2xl border 
+              className={`relative flex flex-col justify-between rounded-xl border
                 ${
                   isActive
                     ? "border-white/40 dark:border-white/30"
                     : "border-black/10 dark:border-white/10"
                 }
                 bg-gradient-to-br ${metric.gradient}
-                p-4 backdrop-blur-xl
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+                p-3
+                backdrop-blur-xl
+                transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg`}
             >
-              {/* Icon */}
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shadow-md mb-2">
-                <Icon className="text-white size-5" />
-              </div>
-
-              {/* Divider */}
-              <div className="h-px w-full bg-white/20 dark:bg-black/30 mb-2" />
-
-              {/* Content */}
-              <div className="flex items-end justify-between">
-                <div>
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-white/80">
+              {/* Header */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 shadow">
+                    <Icon className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-xs font-semibold uppercase text-white/80">
                     {metric.label}
                   </span>
-                  <h4 className="mt-1 text-base font-bold text-white">
-                    {metric.value}
-                  </h4>
                 </div>
 
+                <h4 className="mt-2 text-xl font-bold leading-tight text-white">
+                  {/* {metric.value} */}
+                  0
+                  {/* //hard coded 0 for now  */}
+                </h4>
+              </div>
+
+              {/* Bottom Trend */}
+              <div className="mt-3 flex items-center justify-end">
                 {isUp ? (
                   <Badge color="success" className="scale-90">
                     <ArrowUpIcon />
@@ -111,3 +113,4 @@ export function EcommerceMetrics({ data }: EcommerceMetricsProps) {
     </div>
   );
 }
+
