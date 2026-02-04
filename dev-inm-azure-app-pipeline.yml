@@ -37,6 +37,6 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az webapp deploy --resource-group $(resourceGroup) \
-                  --name $(angularApp) \
+                  --name $(frontendApp) \
                   --src-path $(System.DefaultWorkingDirectory)/out/ui.zip --type zip
             displayName: 'Deploy nextjs UI'
