@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - task/webapp-deployment
+
+pool:
+  name: 'Azure Pipelines'
+  vmImage: 'ubuntu-latest'
+
+variables:
+  azureSubscription: 'tf-service-connection'
+  resourceGroup: 'rg-hrms-dev-ind-si'
+  frontendApp: 'app-frontend-inm-dev-ind-si'
+
+stages:
+  - stage: BuildAndDeployFrontend
+    jobs:
+      - job: DeployFrontend
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '22.x'
+
+          - script: |
+              cd $(System.DefaultWorkingDirectory)/frontend
+              npm install --legacy-peer-deps
+              npm run build
+              cd dist/sennai/browser
+              zip -r ui.zip *
+            displayName: 'Build and Zip frontend App'
+
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az webapp deploy --resource-group $(resourceGroup) \
+                  --name $(frontendApp) \
+                  --src-path $(System.DefaultWorkingDirectory)/frontend/dist/sennai/browser/ui.zip --type zip
+            displayName: 'Deploy frontend App'
