@@ -25,8 +25,7 @@ stages:
               cd $(System.DefaultWorkingDirectory)
               npm install --legacy-peer-deps
               npm run build
-              npx next export
-              cd out
+              cd .next
               zip -r ui.zip *
             displayName: 'Build and Zip Nextjs App'
 
@@ -38,5 +37,5 @@ stages:
               inlineScript: |
                 az webapp deploy --resource-group $(resourceGroup) \
                   --name $(frontendApp) \
-                  --src-path $(System.DefaultWorkingDirectory)/out/ui.zip --type zip
+                  --src-path $(System.DefaultWorkingDirectory)/.next/ui.zip --type zip
             displayName: 'Deploy nextjs UI'
