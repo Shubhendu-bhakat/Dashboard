@@ -19,7 +19,7 @@ stages:
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: '24.x'
+              versionSpec: '22.x'
 
           - script: |
               cd $(System.DefaultWorkingDirectory)
