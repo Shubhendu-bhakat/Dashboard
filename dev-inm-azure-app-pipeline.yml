@@ -13,19 +13,22 @@ variables:
   frontendApp: 'app-frontend-inm-dev-ind-si'
 
 stages:
-  - stage: BuildAndDeployNode
+  - stage: BuildAndDeployNext
     jobs:
-      - job: DeployNode
+      - job: DeployNext
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: '22.x'
+              versionSpec: '24.x'
 
           - script: |
               cd $(System.DefaultWorkingDirectory)
-              npm install
-              zip -r node.zip *
-            displayName: 'Zip Node App'
+              npm install --legacy-peer-deps
+              npm run build
+              npx next export
+              cd out
+              zip -r ui.zip *
+            displayName: 'Build and Zip Nextjs App'
 
           - task: AzureCLI@2
             inputs:
@@ -34,6 +37,6 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az webapp deploy --resource-group $(resourceGroup) \
-                  --name $(frontendApp) \
-                  --src-path $(System.DefaultWorkingDirectory)/node.zip --type zip
-            displayName: 'Deploy Node App'
+                  --name $(angularApp) \
+                  --src-path $(System.DefaultWorkingDirectory)/out/ui.zip --type zip
+            displayName: 'Deploy nextjs UI'
