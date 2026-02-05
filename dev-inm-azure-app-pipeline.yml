@@ -25,6 +25,10 @@ stages:
               cd $(System.DefaultWorkingDirectory)
               npm install --legacy-peer-deps
               npm run build
+<<<<<<< Updated upstream
+=======
+              cd out
+>>>>>>> Stashed changes
               zip -r ui.zip *
             displayName: 'Build and Zip Nextjs App'
 
